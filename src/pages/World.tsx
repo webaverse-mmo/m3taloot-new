@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { PerspectiveCamera, PositionalAudio } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import axios from "axios";

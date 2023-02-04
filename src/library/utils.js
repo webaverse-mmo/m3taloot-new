@@ -6,6 +6,17 @@ import VRMExporter from "./VRMExporter";
 import { CullHiddenFaces } from './cull-mesh.js';
 import { combine } from "./merge-geometry";
 
+
+export function getAvatarData (avatarModel, modelName){
+  const skinnedMeshes = findChildrenByType(avatarModel, "SkinnedMesh")
+  return{
+    humanBones:getHumanoidByBoneNames(skinnedMeshes[0]),
+    materials : [avatarModel.userData.atlasMaterial],
+    meta : getVRMMeta(modelName)
+  }
+
+}
+
 export const cullHiddenMeshes = (avatar, scene, avatarTemplateSpec) => {
   const models = [];
   for (const property in avatar) {
