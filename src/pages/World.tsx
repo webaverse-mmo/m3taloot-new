@@ -3,7 +3,7 @@ import { PerspectiveCamera, PositionalAudio } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import axios from "axios";
 import { BigNumber, ethers } from "ethers";
-import React, { Suspense, useEffect, useRef, useState, useContext } from "react";
+import React, { Suspense, useEffect, useRef, useState, createRef, useContext, forwardRef } from "react";
 import { AnimationMixer, Color, Group, MeshStandardMaterial } from "three";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -207,7 +207,11 @@ export default function World({ avatar, open, lootTokens, mLootTokens, hyperLoot
   }, [lootTokens, mLootTokens, hyperLootTokens, genesisAdventurerTokens]);
 
   useEffect(() => {
+
+
     if (open && doors) {
+    setAvatarModal(true)
+
       console.log("opening doors", doors);
       // if the doors are not open, open them
       // play the open animation on the doors
@@ -220,6 +224,32 @@ export default function World({ avatar, open, lootTokens, mLootTokens, hyperLoot
         mixer.clipAction(animation).play();
       });
 
+      // set a timer for 10 seconds, after the timer ends set avatarModalWindow to animate opacity to 100 and visibility to true
+      const timer = setTimeout(() => {
+        // avatarModalWindow is a react ref
+        // animate the opacity up to 100% with css
+        setTimeout(() => {
+        const avatarModalWindow = document.getElementsByClassName("wrapper")[0];
+        avatarModalWindow.style.opacity = "0";
+        avatarModalWindow.animate(
+          [
+            // keyframes
+            { opacity: "0" },
+            { opacity: "1" },
+          ],
+          {
+            // timing options
+            duration: 2000
+          }
+        );
+        setTimeout(() => {
+          avatarModalWindow.style.visibility = "visible";
+          avatarModalWindow.style.opacity = "1";
+        }, 2000);
+      }, 10);
+      }, 10000);
+
+      setTimeout(() => {
       const interval = setInterval(() => {
         if (mixer.time >= doors.animations[0].duration - 1 / 30) {
           // cancel interval
@@ -229,6 +259,7 @@ export default function World({ avatar, open, lootTokens, mLootTokens, hyperLoot
           mixer.update(1 / 30);
         }
       }, 1000 / 30);
+    }, 1000);
     }
   }, [open, doors]);
 
@@ -274,6 +305,7 @@ export default function World({ avatar, open, lootTokens, mLootTokens, hyperLoot
   };
 
   const showAvatarModal = () => {
+    
     setAvatarModal(true);
   };
 
@@ -490,13 +522,14 @@ export default function World({ avatar, open, lootTokens, mLootTokens, hyperLoot
           <Canvas className="canvas" id="editor-scene" gl={{ preserveDrawingBuffer: true }}>
             <mesh ref={scene} position={[0, 0.02, 0]}>
               {/* add a group to the react-three/fiber scene */}
-              <group ref={standRoot} onClick={showAvatarModal} />
+              <group ref={standRoot} />
             </mesh>
             {doors && scene.current && <CameraMod scene={doors} />}
           </Canvas>
         </div>
       )}
-      {avatarModal && (
+    <div className={"wrapper"} style={{opacity: 0, animationFillMode: "both"}}>
+      {avatar && avatarModal && (
         <div className={styles.avatarModal}>
           <p className={styles.closeBtn} onClick={closeAvatarModal}>
             x
@@ -590,6 +623,7 @@ export default function World({ avatar, open, lootTokens, mLootTokens, hyperLoot
           }
         </div>
       )}
+      </div>
     </Suspense>
   );
 }

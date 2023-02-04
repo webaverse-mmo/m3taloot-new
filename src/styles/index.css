@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.wrapper {
+    animation-fill-mode: forwards;
+    -webkit-animation-fill-mode: forwards;
+}

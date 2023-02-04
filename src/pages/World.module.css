@@ -1,14 +1,17 @@
 .avatarModal {
+  opacity: 100;
   background-color: black;
   border-radius: 5px;
   position: absolute;
   float: left;
   width: 700px;
   height: 500px;
-  left: 50%;
+  right: 3em;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(0%, -50%);
   text-align: center;
+  animation-fill-mode: forwards;
+  -webkit-animation-fill-mode: forwards;
 }
 
 .closeBtn {
