@@ -59,8 +59,6 @@ export async function combine({ transparentColor, avatar, atlasSize = 4096 }) {
     const material = new THREE.MeshStandardMaterial({
         map: textures["diffuse"],
     });
-    vrmMaterial.uniforms.map = textures["diffuse"];
-    vrmMaterial.uniforms.shadeMultiplyTexture = textures["diffuse"];
 
     material.userData.vrmMaterial = vrmMaterial;
     const mesh = new THREE.SkinnedMesh(geometry, material);

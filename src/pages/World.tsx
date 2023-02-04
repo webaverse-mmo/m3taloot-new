@@ -59,13 +59,22 @@ export default function World({ avatar, open, lootTokens, mLootTokens, hyperLoot
   const avatarCamera = useRef();
   const [doors, setDoors] = useState<any>();
   const [stand, setStand] = useState<any>(); 
-  const [totalAvatar, setTotalAvatar] = useState<any>(); 
+  const [totalAvatar, _setTotalAvatar] = useState<any>(); 
   const [avatarModal, setAvatarModal] = useState<any>(false);
   const [successModal, setSuccessModal] = useState<any>(false);
   const [claimDisable, setClaimDisable] = useState<any>(false);
   const { state, account, setAccount, library, setLibrary, provider, setProvider } = useContext(AppContext);
 
   const templateInfo = templates[0];
+
+  function setTotalAvatar (avatar) {
+    avatar.traverse((child) => {
+      if (child.isMesh) {
+        child.frustumCulled = false;
+      }
+    });
+    _setTotalAvatar(avatar);
+  }
 
   function fetchTrait(type: any, name: any) {
     console.log("name", type, name)
@@ -165,7 +174,12 @@ export default function World({ avatar, open, lootTokens, mLootTokens, hyperLoot
       (scene as any).current.add(gltf.scene);
 
       (scene as any).current.traverse((object: any) => {
+        // set frustumCulled false on all meshes
+        if (object.isMesh) {
+          object.frustumCulled = false;
+        }
         if (object.name.includes("Stand")) {
+
           // set the object's material to the token's color
           setStand(object);
 

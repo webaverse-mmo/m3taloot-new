@@ -23,6 +23,7 @@ const Avatar = ({
       for (let i = 0; i < stand.children.length; i++) {
         if (stand.children[i].isSkinnedMesh === true) {
           const model = new THREE.Mesh(stand.children[i].geometry.clone(), stand.children[i].material.clone());
+          model.frustumCulled = false;
           const center = new THREE.Vector3();
           model.name = "body";
           model.geometry.computeBoundingBox();
@@ -49,6 +50,7 @@ const Avatar = ({
               }
               gltf.scene.name = "g-" + key;
               groupAvatarRef?.current?.add(gltf.scene);
+              gltf.scene.frustumCulled = false;
               setTotalAvatar(groupAvatarRef.current);
             });
         } else {
