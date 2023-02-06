@@ -191,9 +191,22 @@ const Content = () => {
   const connectWallet = async () => {
     try {
       const web3Provider = await web3Modal.connect();
-      const library = new ethers.providers.Web3Provider(web3Provider);
+      const library = new ethers.providers.Web3Provider(web3Provider, "any");
       const web3Accounts = await library.listAccounts();
       const network = await library.getNetwork();
+
+      const chainId = 1 // 1: ethereum mainnet, 4: rinkeby 137: polygon mainnet 5: Goerli testnet
+      if (window.ethereum.networkVersion !== chainId) {
+        try {
+          await window.ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: "0x1" }], // 0x4 is rinkeby. Ox1 is ethereum mainnet. 0x89 polygon mainnet  0x5: // Goerli testnet
+          })
+        } catch (err) {
+          return false
+        }
+      }
+
       setAccount(web3Accounts[0]);
       setProvider(web3Provider);
       setLibrary(library)
