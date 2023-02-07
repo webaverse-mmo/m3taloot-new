@@ -194,3 +194,9 @@
   backdrop-filter: blur(22.5px);
   border-radius: 5px;
 }
+
+.loadingBarDiv {
+  padding-top: 20%;
+  display: flex;
+  justify-content: center;
+}

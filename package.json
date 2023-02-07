@@ -10,8 +10,12 @@
     "test": "mocha --exit --recursive"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
     "@ethersproject/providers": "5.6.8",
     "@ethersproject/units": "5.6.1",
+    "@mui/icons-material": "^5.11.0",
+    "@mui/material": "^5.11.8",
     "@popperjs/core": "^2.11.6",
     "@react-three/drei": "^9.17.0",
     "@react-three/fiber": "^8.0.27",

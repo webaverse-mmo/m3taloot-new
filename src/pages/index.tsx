@@ -20,6 +20,7 @@ const App = function () {
   const [ account, setAccount ] = useState(null)
   const [ library, setLibrary ] = useState(null)
   const [ provider, setProvider ] = useState(null)
+  const [ loading, setLoading ] = useState(true)
 
 
   const AppContextValues = {
@@ -31,6 +32,8 @@ const App = function () {
     setLibrary,
     provider,
     setProvider,
+    loading,
+    setLoading
   };
 
   return (

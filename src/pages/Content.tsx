@@ -28,7 +28,7 @@ const Content = () => {
   const [hyperLootTokens, setHyperLootTokens] = useState([]);
   const [genesisAdventurer, setGenesisAdventurer] = useState([]);
 
-  const { state, account, setAccount, library, setLibrary, provider, setProvider} = useContext(AppContext);
+  const { state, account, setAccount, library, setLibrary, provider, setProvider, loading} = useContext(AppContext);
 
   const getLootAbi =(name)=> lootAbi.find((loot)=>loot.name===name);
 
@@ -70,6 +70,7 @@ const Content = () => {
     })();
 
     (async () => {
+
       // get chests from loot and mLoot
       const loot = new ethers.Contract(lootAddress, lootAbi, signer);
       
@@ -194,6 +195,7 @@ const Content = () => {
       const library = new ethers.providers.Web3Provider(web3Provider, "any");
       const web3Accounts = await library.listAccounts();
       const network = await library.getNetwork();
+      console.log("network", network, window.ethereum.networkVersion)
 
       const chainId = 1 // 1: ethereum mainnet, 4: rinkeby 137: polygon mainnet 5: Goerli testnet
       if (window.ethereum.networkVersion !== chainId) {
@@ -227,8 +229,8 @@ const Content = () => {
   }
   
   return (
-      <>
-        { !account && <div className={styles.walletModal}>
+    <>
+        { !loading && !account && <div className={styles.walletModal}>
             <p className={styles.headerTitle}>Enter, Brave adventurers</p>
             <p className={styles.bodyTitle}>You will need to connect your wallet for this experience.</p>
             <div className={styles.connectBtn} >
@@ -236,7 +238,7 @@ const Content = () => {
             </div>
           </div>
         }
-        { account && <div className={styles.walletAddressSection}>
+        { !loading && account && <div className={styles.walletAddressSection}>
             <p className={styles.walletAddress}>{account.slice(0, 4) + `...` + account.slice(-5)}</p>
             <div className={styles.disconnectBtn} onClick={disConnectWallet}></div>
           </div>
@@ -246,7 +248,7 @@ const Content = () => {
             <p>{JSON.stringify(syntheticLoot)}</p>}*/}
           <World avatar={syntheticLoot} hyperLootTokens={hyperLootTokens} genesisAdventurerTokens={genesisAdventurer} lootTokens={lootTokens} mLootTokens={mLootTokens} open={account} />
         </div>
-      </>
+    </>
   );
 };
 

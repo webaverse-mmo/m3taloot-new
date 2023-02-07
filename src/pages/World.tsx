@@ -1,4 +1,9 @@
 // @ts-nocheck
+import DriveFileMoveIcon from "@mui/icons-material/DriveFileMove";
+import Box from '@mui/material/Box';
+import CircularProgress from "@mui/material/CircularProgress";
+import Fab from "@mui/material/Fab";
+import { green } from "@mui/material/colors";
 import { PerspectiveCamera, PositionalAudio } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import axios from "axios";
@@ -64,7 +69,7 @@ export default function World({ avatar, open, lootTokens, mLootTokens, hyperLoot
   const [avatarModal, setAvatarModal] = useState<any>(false);
   const [successModal, setSuccessModal] = useState<any>(false);
   const [claimDisable, setClaimDisable] = useState<any>(false);
-  const { state, account, setAccount, library, setLibrary, provider, setProvider } = useContext(AppContext);
+  const { state, account, setAccount, library, setLibrary, provider, setProvider,loading, setLoading } = useContext(AppContext);
 
   const templateInfo = templates[0];
 
@@ -170,6 +175,7 @@ export default function World({ avatar, open, lootTokens, mLootTokens, hyperLoot
     const loader = new GLTFLoader();
     loader.load("./world.glb", (gltf) => {
       setDoors(gltf);
+      setLoading(false);
       gltf.scene.position.set(0, 0, 0);
       // add doors to scene
       (scene as any).current.add(gltf.scene);
@@ -515,115 +521,143 @@ export default function World({ avatar, open, lootTokens, mLootTokens, hyperLoot
     return new Blob([buffer], { type: "application/octet-stream" });
   }
 
+  const buttonSx = {
+      bgcolor: green[500],
+      "&:hover": {
+        bgcolor: green[700],
+      },
+      position: "absolute",
+      width: "160px",
+      height: "160px",
+      top: "10px",
+      left: "10px"
+  };
+
+
   return (
-    <Suspense fallback="loading...">
-      {templateInfo && (
-        <div id="canvas-wrap" style={{ ...canvasWrap }}>
-          <Canvas className="canvas" id="editor-scene" gl={{ preserveDrawingBuffer: true }}>
-            <mesh ref={scene} position={[0, 0.02, 0]}>
-              {/* add a group to the react-three/fiber scene */}
-              <group ref={standRoot} />
-            </mesh>
-            {doors && scene.current && <CameraMod scene={doors} />}
-          </Canvas>
-        </div>
-      )}
-    <div className={"wrapper"} style={{opacity: 0, animationFillMode: "both"}}>
-      {avatar && avatarModal && (
-        <div className={styles.avatarModal}>
-          <p className={styles.closeBtn} onClick={closeAvatarModal}>
-            x
-          </p>
-          {
-            !successModal ? (
-              <>
-                <p className={styles.headerTitle}>Your loot</p>
-                <div className={styles.bodySection}>
-                  <div className={styles.bodyTitle}>
-                    {Object.keys(avatar).map((trait: any) => {
-                      return (
-                        <p className={styles.traitName} key={trait}>
-                          {trait}: &nbsp;&nbsp;{avatar[trait]}
-                        </p>
-                      );
-                    })}
-                  </div>
-                  <div className={styles.avatarSection}>
-                    <Canvas className={styles.mintCanvas} id="mint-scene" gl={{ antialias: true, preserveDrawingBuffer:true }} linear={false}>
-                      <ambientLight
-                        color={[1,1,1]}
-                        intensity={0.5}
-                      />
-                      
-                      <PerspectiveCamera ref={avatarCamera}>
-                        <mesh scale={2} >
-                          <Avatar avatar={avatar} stand={stand} fetchTrait={fetchTrait} templateInfo={templateInfo} setTotalAvatar={setTotalAvatar}/>
-                        </mesh>
-                      </PerspectiveCamera>
-                    </Canvas>
-                  </div>
-                </div>
-                <div className={styles.btnSection}>
-                  { claimDisable ? <div className={styles.disabledClaimBtn}>
-                          <p className={styles.claimTitle}>
-                            Claim
-                          </p>
-                        </div> 
-                        : <div className={styles.claimBtn}>
-                            <p className={styles.claimTitle} onClick={() => {
-                              claimNFT();
-                            }}>
-                              Claim
+    <>
+      { 
+        loading && 
+          <div className={styles.loadingBarDiv}>
+            <Box sx={{ m: 1, position: 'relative' }}>
+              <Fab
+                aria-label="save"
+                color="primary"
+                sx={buttonSx}
+              >
+                <DriveFileMoveIcon fontSize="large"/>
+              </Fab>
+              <CircularProgress size="180px"/>  
+            </Box>
+          </div>
+      }
+      <Suspense fallback="loading...">
+        {templateInfo && (
+          <div id="canvas-wrap" style={{ ...canvasWrap }}>
+            <Canvas className="canvas" id="editor-scene" gl={{ preserveDrawingBuffer: true }}>
+              <mesh ref={scene} position={[0, 0.02, 0]}>
+                {/* add a group to the react-three/fiber scene */}
+                <group ref={standRoot} />
+              </mesh>
+              {doors && scene.current && <CameraMod scene={doors} />}
+            </Canvas>
+          </div>
+        )}
+        <div className={"wrapper"} style={{opacity: 0, animationFillMode: "both"}}>
+          {avatar && avatarModal && (
+            <div className={styles.avatarModal}>
+              <p className={styles.closeBtn} onClick={closeAvatarModal}>
+                x
+              </p>
+              {
+                !successModal ? (
+                  <>
+                    <p className={styles.headerTitle}>Your loot</p>
+                    <div className={styles.bodySection}>
+                      <div className={styles.bodyTitle}>
+                        {Object.keys(avatar).map((trait: any) => {
+                          return (
+                            <p className={styles.traitName} key={trait}>
+                              {trait}: &nbsp;&nbsp;{avatar[trait]}
                             </p>
-                          </div>
-                  }
-                  <div className={styles.downloadBtn}>
-                    <p className={styles.downloadTitle} onClick={() => {
-                      console.log("childatavar", totalAvatar);
-                      download(totalAvatar, "m3LootAvatar", "glb")
-                    }}>
-                      Download glb
-                    </p>
-                  </div>
-                </div>
-              </>) :
-              (
-                <>
-                  <p className={styles.successHeaderTitle}>Congratulations</p>
-                  <p className={styles.successBodyTitle}>You claimed your adventurer gear</p>
-                  <div className={styles.successBodySection}>
-                    <div className={styles.successAvatarSection}>
-                      <Canvas className={styles.successCanvas} id="mint-scene" gl={{ antialias: true, preserveDrawingBuffer:true }} linear={false}>
-                        <ambientLight
-                          color={[1,1,1]}
-                          intensity={0.5}
-                        />
-                        
-                        <PerspectiveCamera ref={avatarCamera}>                        
-                          <mesh scale={2} >
-                            <Avatar avatar={avatar} stand={stand} fetchTrait={fetchTrait} templateInfo={templateInfo} setTotalAvatar={() => {}}/>
-                          </mesh>
-                        </PerspectiveCamera>
-                      </Canvas>
+                          );
+                        })}
+                      </div>
+                      <div className={styles.avatarSection}>
+                        <Canvas className={styles.mintCanvas} id="mint-scene" gl={{ antialias: true, preserveDrawingBuffer:true }} linear={false}>
+                          <ambientLight
+                            color={[1,1,1]}
+                            intensity={0.5}
+                          />
+                          <PerspectiveCamera ref={avatarCamera}>
+                            <mesh scale={2} >
+                              <Avatar avatar={avatar} stand={stand} fetchTrait={fetchTrait} templateInfo={templateInfo} setTotalAvatar={setTotalAvatar}/>
+                            </mesh>
+                          </PerspectiveCamera>
+                        </Canvas>
+                      </div>
                     </div>
-                  </div>
-                  <p className={styles.successBodyTitle}>Join the community</p>
-                  <div className={styles.successBtnSection}>
-                    <div className={styles.discordBtn} onClick={() => {
-                        // connect discord
-                      }}>
+                    <div className={styles.btnSection}>
+                      { claimDisable ? <div className={styles.disabledClaimBtn}>
+                              <p className={styles.claimTitle}>
+                                Claim
+                              </p>
+                            </div> 
+                            : <div className={styles.claimBtn}>
+                                <p className={styles.claimTitle} onClick={() => {
+                                  claimNFT();
+                                }}>
+                                  Claim
+                                </p>
+                              </div>
+                      }
+                      <div className={styles.downloadBtn}>
+                        <p className={styles.downloadTitle} onClick={() => {
+                          console.log("childatavar", totalAvatar);
+                          download(totalAvatar, "m3LootAvatar", "glb")
+                        }}>
+                          Download glb
+                        </p>
+                      </div>
                     </div>
-                    <div className={styles.twitterBtn} onClick={() => {
-                        // connect twitter
-                      }}>
-                    </div>
-                  </div>
-                </>
-              )
-          }
+                  </>) :
+                  (
+                    <>
+                      <p className={styles.successHeaderTitle}>Congratulations</p>
+                      <p className={styles.successBodyTitle}>You claimed your adventurer gear</p>
+                      <div className={styles.successBodySection}>
+                        <div className={styles.successAvatarSection}>
+                          <Canvas className={styles.successCanvas} id="mint-scene" gl={{ antialias: true, preserveDrawingBuffer:true }} linear={false}>
+                            <ambientLight
+                              color={[1,1,1]}
+                              intensity={0.5}
+                            />
+                            <PerspectiveCamera ref={avatarCamera}>                        
+                              <mesh scale={2} >
+                                <Avatar avatar={avatar} stand={stand} fetchTrait={fetchTrait} templateInfo={templateInfo} setTotalAvatar={() => {}}/>
+                              </mesh>
+                            </PerspectiveCamera>
+                          </Canvas>
+                        </div>
+                      </div>
+                      <p className={styles.successBodyTitle}>Join the community</p>
+                      <div className={styles.successBtnSection}>
+                        <div className={styles.discordBtn} onClick={() => {
+                            // connect discord
+                          }}>
+                        </div>
+                        <div className={styles.twitterBtn} onClick={() => {
+                            // connect twitter
+                          }}>
+                        </div>
+                      </div>
+                    </>
+                  )
+              }
+            </div>
+          )}
         </div>
-      )}
-      </div>
-    </Suspense>
+      </Suspense>
+    </>
   );
 }
