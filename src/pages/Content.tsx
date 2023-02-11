@@ -176,7 +176,7 @@ const Content = () => {
   // const disabled = !triedEager || !!activatingConnector || connected(injected) || connected(walletconnect) || !!error;
 
   const web3Modal = new Web3Modal({
-    network: "rinkeby",
+    network: "mainnet",
     theme: "light", // optional, 'dark' / 'light',
     cacheProvider: false, // optional
     providerOptions: {

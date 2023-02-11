@@ -296,8 +296,6 @@ export default function World({ avatar, open, lootTokens, mLootTokens, hyperLoot
           console.log("trait ignored", key);
         }
       }
-
-
     }
   }, [avatar]);
 
@@ -322,6 +320,7 @@ export default function World({ avatar, open, lootTokens, mLootTokens, hyperLoot
 
   const claimNFT = async () => {
     setClaimDisable(true);
+
     const screenshot = await getScreenShot("mint-scene")
     if (!screenshot) {
       throw new Error("Unable to get screenshot")
@@ -334,11 +333,11 @@ export default function World({ avatar, open, lootTokens, mLootTokens, hyperLoot
       console.error(err)
     })
     console.log("imagehash",imageHash)
-    // const glb = await getModelFromScene(totalAvatar.clone(), "glb", new Color(1, 1, 1))
-    // const glbHash = await saveFileToPinata(
-    //   glb,
-    //   "AvatarGlb_" + Date.now() + ".glb",
-    // )
+    const glb = await getModelFromScene(totalAvatar.clone(), "glb", new Color(1, 1, 1))
+    const glbHash = await saveFileToPinata(
+      glb,
+      "AvatarGlb_" + Date.now() + ".glb",
+    )
 
     let attributes = [];
     Object.keys(avatar).map((trait: any) => {
@@ -347,13 +346,12 @@ export default function World({ avatar, open, lootTokens, mLootTokens, hyperLoot
         value: avatar[trait]
       })
     })
-    console.log("attributes", attributes)
+
     const metadata = {
       name: "Avatars",
       description: "Creator Studio Avatars.",
       image: `ipfs://${imageHash.IpfsHash}`,
-      // animation_url: `ipfs://${glbHash.IpfsHash}`,  // comment
-      animation_url: `ipfs://`,  
+      animation_url: `ipfs://${glbHash.IpfsHash}`,
       attributes,
     }
     console.log("metadata", metadata);
@@ -555,7 +553,7 @@ export default function World({ avatar, open, lootTokens, mLootTokens, hyperLoot
         {templateInfo && (
           <div id="canvas-wrap" style={{ ...canvasWrap }}>
             <Canvas className="canvas" id="editor-scene" gl={{ preserveDrawingBuffer: true }}>
-              <mesh ref={scene} position={[0, 0.02, 0]}>
+              <mesh ref={scene} position={[0, 0.02, 0]} onClick={showAvatarModal}>
                 {/* add a group to the react-three/fiber scene */}
                 <group ref={standRoot} />
               </mesh>
