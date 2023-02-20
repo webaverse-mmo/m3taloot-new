@@ -386,7 +386,7 @@ export default function World({ avatar, open, lootTokens, mLootTokens, hyperLoot
         value: BigNumber.from(tokenPrice).mul(1),
         from: account,
       }
-      const tx = await contract.safeMint(1, metadataIpfs, options)
+      const tx = await contract.mintToken(metadataIpfs, options)
       let res = await tx.wait()
       if (res.transactionHash) {
         setSuccessModal(true);
