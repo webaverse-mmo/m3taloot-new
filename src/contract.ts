@@ -8,7 +8,7 @@ export const hyperLootAddress = "0x0290d49f53A8d186973B82faaFdaFe696B29AcBb";
 
 export const genesisAdventurerAddress = "0x8dB687aCEb92c66f013e1D614137238Cc698fEdb";
 
-export const m3LootAvatarAddress = "0xE6B18039848d27570Dc459b54d2d239ea67f8DFa"; // m3LootAvatarNFT Address of polygon
+export const m3LootAvatarAddress = "0xdF741E4897BCd68e15900ed65A8ad9a86E4caB2A"; // m3LootAvatarNFT Address of polygon
 
 export const synthLootAbi = [{
   "inputs": [{
